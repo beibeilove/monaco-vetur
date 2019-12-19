@@ -12,8 +12,6 @@ import { LanguageModelCache, getLanguageModelCache } from '../../embeddedSupport
 import { LanguageMode } from '../../embeddedSupport/languageModes';
 import { VueDocumentRegions, LanguageId } from '../../embeddedSupport/embeddedSupport';
 import { getFileFsPath } from '../../utils/paths';
-import { prettierify } from '../../utils/prettier';
-import { ParserOption } from '../../utils/prettier/prettier.d';
 import { NULL_HOVER } from '../nullMode';
 import { VLSFormatConfig } from '../../config';
 
@@ -116,20 +114,20 @@ function getStyleMode(
         return [];
       }
 
-      const { value, range } = getValueAndRange(document, currRange);
-      const needIndent = config.vetur.format.styleInitialIndent;
-      const parserMap: { [k: string]: ParserOption } = {
-        css: 'css',
-        less: 'less'
-      };
-      return prettierify(
-        value,
-        getFileFsPath(document.uri),
-        range,
-        config.vetur.format as VLSFormatConfig,
-        parserMap[languageId],
-        needIndent
-      );
+      // const { value, range } = getValueAndRange(document, currRange);
+      // const needIndent = config.vetur.format.styleInitialIndent;
+      // const parserMap: { [k: string]: ParserOption } = {
+      //   css: 'css',
+      //   less: 'less'
+      // };
+      // return prettierify(
+      //   value,
+      //   getFileFsPath(document.uri),
+      //   range,
+      //   config.vetur.format as VLSFormatConfig,
+      //   parserMap[languageId],
+      //   needIndent
+      // );
     },
     onDocumentRemoved(document) {
       embeddedDocuments.onDocumentRemoved(document);

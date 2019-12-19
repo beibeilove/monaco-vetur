@@ -27,7 +27,6 @@ import {
 } from 'vscode-languageserver-types';
 import { LanguageMode } from '../../embeddedSupport/languageModes';
 import { VueDocumentRegions, LanguageRange } from '../../embeddedSupport/embeddedSupport';
-import { prettierify, prettierEslintify, prettierTslintify } from '../../utils/prettier';
 import { getFileFsPath, getFilePath } from '../../utils/paths';
 
 import Uri from 'vscode-uri';
@@ -481,58 +480,39 @@ export async function getJavascriptMode(
         return [];
       }
 
-      const parser = scriptDoc.languageId === 'javascript' ? 'babylon' : 'typescript';
       const needInitialIndent = config.vetur.format.scriptInitialIndent;
       const vlsFormatConfig: VLSFormatConfig = config.vetur.format;
 
-      if (
-        defaultFormatter === 'prettier' ||
-        defaultFormatter === 'prettier-eslint' ||
-        defaultFormatter === 'prettier-tslint'
-      ) {
-        const code = doc.getText(range);
-        const filePath = getFileFsPath(scriptDoc.uri);
-        let doFormat;
-        if (defaultFormatter === 'prettier-eslint') {
-          doFormat = prettierEslintify;
-        } else if (defaultFormatter === 'prettier-tslint') {
-          doFormat = prettierTslintify;
-        } else {
-          doFormat = prettierify;
-        }
-        return doFormat(code, filePath, range, vlsFormatConfig, parser, needInitialIndent);
-      } else {
-        const initialIndentLevel = needInitialIndent ? 1 : 0;
-        const formatSettings: ts.FormatCodeSettings =
-          scriptDoc.languageId === 'javascript' ? config.javascript.format : config.typescript.format;
-        const convertedFormatSettings = convertOptions(
-          formatSettings,
-          {
-            tabSize: vlsFormatConfig.options.tabSize,
-            insertSpaces: !vlsFormatConfig.options.useTabs
-          },
-          initialIndentLevel
-        );
+      const initialIndentLevel = needInitialIndent ? 1 : 0;
+      const formatSettings: ts.FormatCodeSettings =
+        scriptDoc.languageId === 'javascript' ? config.javascript.format : config.typescript.format;
+      const convertedFormatSettings = convertOptions(
+        formatSettings,
+        {
+          tabSize: vlsFormatConfig.options.tabSize,
+          insertSpaces: !vlsFormatConfig.options.useTabs
+        },
+        initialIndentLevel
+      );
 
-        const fileFsPath = getFileFsPath(doc.uri);
-        const start = scriptDoc.offsetAt(range.start);
-        const end = scriptDoc.offsetAt(range.end);
-        const edits = service.getFormattingEditsForRange(fileFsPath, start, end, convertedFormatSettings);
+      const fileFsPath = getFileFsPath(doc.uri);
+      const start = scriptDoc.offsetAt(range.start);
+      const end = scriptDoc.offsetAt(range.end);
+      const edits = service.getFormattingEditsForRange(fileFsPath, start, end, convertedFormatSettings);
 
-        if (!edits) {
-          return [];
-        }
-        const result = [];
-        for (const edit of edits) {
-          if (edit.span.start >= start && edit.span.start + edit.span.length <= end) {
-            result.push({
-              range: convertRange(scriptDoc, edit.span),
-              newText: edit.newText
-            });
-          }
-        }
-        return result;
+      if (!edits) {
+        return [];
       }
+      const result = [];
+      for (const edit of edits) {
+        if (edit.span.start >= start && edit.span.start + edit.span.length <= end) {
+          result.push({
+            range: convertRange(scriptDoc, edit.span),
+            newText: edit.newText
+          });
+        }
+      }
+      return result;
     },
     onDocumentRemoved(document: TextDocument) {
       jsDocuments.onDocumentRemoved(document);

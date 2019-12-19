@@ -1,14 +1,7 @@
 import * as _ from 'lodash';
 import { TextDocument, Range, TextEdit, Position } from 'vscode-languageserver-types';
 import { html as htmlBeautify } from 'js-beautify';
-import { IPrettyHtml } from './prettyhtml';
-import { requireLocalPkg } from '../../../utils/prettier/requirePkg';
-import { getFileFsPath } from '../../../utils/paths';
 import { VLSFormatConfig } from '../../../config';
-import { Prettier, PrettierConfig } from '../../../utils/prettier/prettier';
-import { prettierify } from '../../../utils/prettier';
-
-type PrettyHtmlConfig = IPrettyHtml extends (input: string, options: infer R) => any ? NonNullable<R> : never;
 
 const TEMPLATE_HEAD = '<template>';
 const TEMPLATE_TAIL = '</template>';
@@ -21,26 +14,8 @@ export function htmlFormat(document: TextDocument, currRange: Range, vlsFormatCo
   const { value, range } = getValueAndRange(document, currRange);
 
   const originalSource = TEMPLATE_HEAD + value + TEMPLATE_TAIL;
-  let beautifiedHtml: string;
 
-  if (vlsFormatConfig.defaultFormatter.html === 'prettyhtml') {
-    beautifiedHtml = formatWithPrettyHtml(getFileFsPath(document.uri), originalSource, vlsFormatConfig);
-  } else if (vlsFormatConfig.defaultFormatter.html === 'prettier') {
-    const prettierResult = formatWithPrettier(
-      originalSource,
-      getFileFsPath(document.uri),
-      currRange,
-      vlsFormatConfig,
-      false
-    );
-    if (prettierResult[0] && prettierResult[0].newText) {
-      beautifiedHtml = prettierResult[0].newText.trim();
-    } else {
-      beautifiedHtml = originalSource;
-    }
-  } else {
-    beautifiedHtml = formatWithJsBeautify(originalSource, vlsFormatConfig);
-  }
+  const beautifiedHtml = formatWithJsBeautify(originalSource, vlsFormatConfig);
 
   const wrappedHtml = beautifiedHtml.substring(TEMPLATE_HEAD.length, beautifiedHtml.length - TEMPLATE_TAIL.length);
   return [
@@ -49,16 +24,6 @@ export function htmlFormat(document: TextDocument, currRange: Range, vlsFormatCo
       newText: wrappedHtml
     }
   ];
-}
-
-function formatWithPrettyHtml(fileFsPath: string, input: string, vlsFormatConfig: VLSFormatConfig): string {
-  const prettier = requireLocalPkg(fileFsPath, 'prettier') as Prettier;
-  const prettierrcOptions = prettier.resolveConfig.sync(fileFsPath, { useCache: false }) || null;
-
-  const prettyhtml: IPrettyHtml = requireLocalPkg(fileFsPath, '@starptech/prettyhtml');
-
-  const result = prettyhtml(input, getPrettyHtmlOptions(prettierrcOptions, vlsFormatConfig));
-  return result.contents.trim();
 }
 
 function formatWithJsBeautify(input: string, vlsFormatConfig: VLSFormatConfig): string {
@@ -73,40 +38,6 @@ function formatWithJsBeautify(input: string, vlsFormatConfig: VLSFormatConfig): 
   );
 
   return htmlBeautify(input, htmlFormattingOptions);
-}
-
-function formatWithPrettier(
-  code: string,
-  fileFsPath: string,
-  range: Range,
-  vlsFormatConfig: VLSFormatConfig,
-  initialIndent: boolean
-) {
-  return prettierify(code, fileFsPath, range, vlsFormatConfig, 'vue', initialIndent);
-}
-
-function getPrettyHtmlOptions(prettierrcOptions: Partial<PrettierConfig> | null, vlsFormatConfig: VLSFormatConfig) {
-  const fromVls = {
-    useTabs: vlsFormatConfig.options.useTabs,
-    tabWidth: vlsFormatConfig.options.tabSize
-  };
-
-  const fromPrettier: Partial<PrettyHtmlConfig> = {};
-  if (prettierrcOptions) {
-    fromPrettier.useTabs = prettierrcOptions.useTabs;
-    fromPrettier.tabWidth = prettierrcOptions.tabWidth;
-    fromPrettier.printWidth = prettierrcOptions.printWidth;
-  }
-
-  return {
-    ...fromVls,
-    ...fromPrettier,
-    usePrettier: true,
-    prettier: {
-      ...prettierrcOptions
-    },
-    ...vlsFormatConfig.defaultFormatterOptions['prettyhtml']
-  };
 }
 
 function getValueAndRange(document: TextDocument, currRange: Range): { value: string; range: Range } {
