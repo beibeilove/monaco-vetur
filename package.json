@@ -20,12 +20,6 @@
     "docs": "bash ./build/update-docs.sh",
     "prepare-publish": "./build/release-cleanup.sh"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npm run test:server"
-    }
-  },
   "lint-staged": {
     "*.ts": [
       "tslint --fix",
