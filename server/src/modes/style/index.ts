@@ -1,7 +1,6 @@
 import { TextDocument, Position, Range } from 'vscode-languageserver-types';
 import {
   getCSSLanguageService,
-  getSCSSLanguageService,
   getLESSLanguageService,
   LanguageService
 } from 'vscode-css-languageservice';
@@ -23,15 +22,6 @@ export function getCSSMode(documentRegions: LanguageModelCache<VueDocumentRegion
   return getStyleMode('css', languageService, documentRegions);
 }
 
-export function getPostCSSMode(documentRegions: LanguageModelCache<VueDocumentRegions>): LanguageMode {
-  const languageService = getCSSLanguageService();
-  return getStyleMode('postcss', languageService, documentRegions);
-}
-
-export function getSCSSMode(documentRegions: LanguageModelCache<VueDocumentRegions>): LanguageMode {
-  const languageService = getSCSSLanguageService();
-  return getStyleMode('scss', languageService, documentRegions);
-}
 export function getLESSMode(documentRegions: LanguageModelCache<VueDocumentRegions>): LanguageMode {
   const languageService = getLESSLanguageService();
   return getStyleMode('less', languageService, documentRegions);
@@ -57,16 +47,12 @@ function getStyleMode(
       config = c;
     },
     doValidation(document) {
-      if (languageId === 'postcss') {
-        return [];
-      } else {
-        const embedded = embeddedDocuments.refreshAndGet(document);
-        return languageService.doValidation(embedded, stylesheets.refreshAndGet(embedded));
-      }
+      const embedded = embeddedDocuments.refreshAndGet(document);
+      return languageService.doValidation(embedded, stylesheets.refreshAndGet(embedded));
     },
     doComplete(document, position) {
       const embedded = embeddedDocuments.refreshAndGet(document);
-      const emmetSyntax = languageId === 'postcss' ? 'css' : languageId;
+      const emmetSyntax = languageId;
       const lsCompletions = languageService.doComplete(embedded, position, stylesheets.refreshAndGet(embedded));
       const lsItems = lsCompletions
         ? _.map(lsCompletions.items, i => {
@@ -134,8 +120,6 @@ function getStyleMode(
       const needIndent = config.vetur.format.styleInitialIndent;
       const parserMap: { [k: string]: ParserOption } = {
         css: 'css',
-        postcss: 'css',
-        scss: 'scss',
         less: 'less'
       };
       return prettierify(

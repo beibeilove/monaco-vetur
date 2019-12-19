@@ -29,7 +29,7 @@ export function parseVueDocumentRegions(document: TextDocument) {
     switch (token) {
       case TokenType.Styles:
         regions.push({
-          languageId: /^(sass|scss|less|postcss|stylus)$/.test(languageIdFromType)
+          languageId: /^(less)$/.test(languageIdFromType)
             ? (languageIdFromType as LanguageId)
             : defaultCSSLang,
           start: scanner.getTokenOffset(),
@@ -172,11 +172,5 @@ function scanTemplateRegion(scanner: Scanner, text: string): EmbeddedRegion | nu
 
 function getLanguageIdFromLangAttr(lang: string): LanguageId {
   let languageIdFromType = removeQuotes(lang);
-  if (languageIdFromType === 'jade') {
-    languageIdFromType = 'pug';
-  }
-  if (languageIdFromType === 'ts') {
-    languageIdFromType = 'typescript';
-  }
   return languageIdFromType as LanguageId;
 }

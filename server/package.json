@@ -37,8 +37,6 @@
     "prettier-tslint": "^0.4.2",
     "read-pkg-up": "^4.0.0",
     "resolve": "^1.14.0",
-    "stylus": "^0.54.7",
-    "stylus-supremacy": "^2.14.0",
     "typescript": "^3.7.3",
     "vscode-css-languageservice": "^4.0.2",
     "vscode-emmet-helper": "^1.2.16",

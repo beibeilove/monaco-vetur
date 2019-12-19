@@ -63,9 +63,7 @@ export class VLS {
     'vue-html': true,
     html: true,
     css: true,
-    scss: true,
     less: true,
-    postcss: true,
     javascript: true
   };
 
@@ -205,8 +203,6 @@ export class VLS {
     const veturValidationOptions = config.vetur.validation;
     this.validation['vue-html'] = veturValidationOptions.template;
     this.validation.css = veturValidationOptions.style;
-    this.validation.postcss = veturValidationOptions.style;
-    this.validation.scss = veturValidationOptions.style;
     this.validation.less = veturValidationOptions.style;
     this.validation.javascript = veturValidationOptions.script;
 

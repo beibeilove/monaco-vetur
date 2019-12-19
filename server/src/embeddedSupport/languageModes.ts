@@ -24,10 +24,9 @@ import {
 import { getLanguageModelCache, LanguageModelCache } from './languageModelCache';
 import { getVueDocumentRegions, VueDocumentRegions, LanguageId, LanguageRange } from './embeddedSupport';
 import { getVueMode } from '../modes/vue';
-import { getCSSMode, getSCSSMode, getLESSMode, getPostCSSMode } from '../modes/style';
+import { getCSSMode, getLESSMode } from '../modes/style';
 import { getJavascriptMode } from '../modes/script/javascript';
 import { VueHTMLMode } from '../modes/template';
-import { getStylusMode } from '../modes/style/stylus';
 import { DocumentContext, RefactorAction } from '../types';
 import { VueInfoService } from '../services/vueInfoService';
 import { DependencyService, State } from '../services/dependencyService';
@@ -77,16 +76,10 @@ export interface LanguageModeRange extends LanguageRange {
 export class LanguageModes {
   private modes: { [k in LanguageId]: LanguageMode } = {
     vue: nullMode,
-    pug: nullMode,
     'vue-html': nullMode,
     css: nullMode,
-    postcss: nullMode,
-    scss: nullMode,
     less: nullMode,
-    stylus: nullMode,
-    javascript: nullMode,
-    typescript: nullMode,
-    tsx: nullMode
+    javascript: nullMode
   };
 
   private documentRegions: LanguageModelCache<VueDocumentRegions>;
@@ -138,13 +131,8 @@ export class LanguageModes {
     this.modes['vue'] = getVueMode(workspacePath, globalSnippetDir);
     this.modes['vue-html'] = vueHtmlMode;
     this.modes['css'] = getCSSMode(this.documentRegions);
-    this.modes['postcss'] = getPostCSSMode(this.documentRegions);
-    this.modes['scss'] = getSCSSMode(this.documentRegions);
     this.modes['less'] = getLESSMode(this.documentRegions);
-    this.modes['stylus'] = getStylusMode(this.documentRegions);
     this.modes['javascript'] = jsMode;
-    this.modes['typescript'] = jsMode;
-    this.modes['tsx'] = jsMode;
   }
 
   getModeAtPosition(document: TextDocument, position: Position): LanguageMode | undefined {

@@ -4,15 +4,9 @@ import { parseVueDocumentRegions, EmbeddedRegion } from './vueDocumentRegionPars
 export type LanguageId =
   | 'vue'
   | 'vue-html'
-  | 'pug'
   | 'css'
-  | 'postcss'
-  | 'scss'
   | 'less'
-  | 'stylus'
   | 'javascript'
-  | 'typescript'
-  | 'tsx';
 
 export interface LanguageRange extends Range {
   languageId: LanguageId;
