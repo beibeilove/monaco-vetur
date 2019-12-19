@@ -30,7 +30,6 @@
     "gridsome-helper-json": "^1.0.3",
     "js-beautify": "^1.10.2",
     "lodash": "^4.17.15",
-    "nuxt-helper-json": "^1.0.0",
     "parse-gitignore": "^1.0.1",
     "prettier": "^1.19.1",
     "prettier-eslint": "^8.8.2",

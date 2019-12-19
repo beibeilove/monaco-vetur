@@ -16,7 +16,6 @@ export { IHTMLTagProvider } from './common';
 import * as ts from 'typescript';
 import * as fs from 'fs';
 import { join } from 'path';
-import { getNuxtTagProvider } from './nuxtTags';
 
 export let allTagProviders: IHTMLTagProvider[] = [
   getHTML5TagProvider(),
@@ -45,7 +44,7 @@ export function getTagProviderSettings(workspacePath: string | null | undefined)
     vuetify: false,
     quasar: false, // Quasar v1+
     'quasar-framework': false, // Quasar pre v1
-    nuxt: false,
+    // nuxt: false,
     gridsome: false
   };
   if (!workspacePath) {
@@ -79,9 +78,9 @@ export function getTagProviderSettings(workspacePath: string | null | undefined)
     if (dependencies['vuetify'] || devDependencies['vuetify']) {
       settings['vuetify'] = true;
     }
-    if (dependencies['@nuxtjs/vuetify'] || devDependencies['@nuxtjs/vuetify']) {
-      dependencies['vuetify'] = true;
-    }
+    // if (dependencies['@nuxtjs/vuetify'] || devDependencies['@nuxtjs/vuetify']) {
+    //   dependencies['vuetify'] = true;
+    // }
     // Quasar v1+:
     if (dependencies['quasar']) {
       settings['quasar'] = true;
@@ -96,19 +95,19 @@ export function getTagProviderSettings(workspacePath: string | null | undefined)
       // and enable Quasar later below in the for()
       dependencies['quasar-framework'] = '^0.0.17';
     }
-    if (
-      dependencies['nuxt'] ||
-      dependencies['nuxt-legacy'] ||
-      dependencies['nuxt-edge'] ||
-      dependencies['nuxt-ts'] ||
-      dependencies['nuxt-ts-edge']
-    ) {
-      const nuxtTagProvider = getNuxtTagProvider(workspacePath);
-      if (nuxtTagProvider) {
-        settings['nuxt'] = true;
-        allTagProviders.push(nuxtTagProvider);
-      }
-    }
+    // if (
+    //   dependencies['nuxt'] ||
+    //   dependencies['nuxt-legacy'] ||
+    //   dependencies['nuxt-edge'] ||
+    //   dependencies['nuxt-ts'] ||
+    //   dependencies['nuxt-ts-edge']
+    // ) {
+    //   const nuxtTagProvider = getNuxtTagProvider(workspacePath);
+    //   if (nuxtTagProvider) {
+    //     settings['nuxt'] = true;
+    //     allTagProviders.push(nuxtTagProvider);
+    //   }
+    // }
     if (dependencies['gridsome']) {
       settings['gridsome'] = true;
     }
